@@ -8,16 +8,26 @@ from pandas.plotting import parallel_coordinates
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn import metrics
 
-data = pd.read_csv('data/iris.csv')
-data.head(5)
+def main():
 
-train, test = train_test_split(data, test_size = 0.4, stratify = data['species'], random_state = 42)
-X_train = train[['sepal_length','sepal_width','petal_length','petal_width']]
-y_train = train.species
-X_test = test[['sepal_length','sepal_width','petal_length','petal_width']]
-y_test = test.species
+    data = pd.read_csv('data/data_iris.csv')
+    data.head(5)
 
-mod_dt = DecisionTreeClassifier(max_depth = 3, random_state = 1)
-mod_dt.fit(X_train,y_train)
-prediction=mod_dt.predict(X_test)
-print('The accuracy of the Decision Tree is',"{:.3f}".format(metrics.accuracy_score(prediction,y_test)))
+    train, test = train_test_split(data, test_size = 0.4, stratify = data['species'], random_state = 42)
+    X_train = train[['sepal_length','sepal_width','petal_length','petal_width']]
+    y_train = train.species
+    X_test = test[['sepal_length','sepal_width','petal_length','petal_width']]
+    y_test = test.species
+
+    mod_dt = DecisionTreeClassifier(max_depth = 3, random_state = 1)
+    mod_dt.fit(X_train,y_train)
+    prediction=mod_dt.predict(X_test)
+    print('The accuracy of the Decision Tree is',"{:.3f}".format(metrics.accuracy_score(prediction,y_test)))
+
+    import joblib
+
+    # Save model
+    joblib.dump(mod_dt, 'model/model.pkl')
+if __name__ == "__main__":
+    main()
+
