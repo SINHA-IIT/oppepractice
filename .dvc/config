@@ -1,0 +1,5 @@
+[core]
+    remote = gcsremote
+['remote "gcsremote"']
+    url = gs://mlops-course-swift-yew-472812-c6-week3/dvcstore
+    credentialpath = /home/g21f2001350/.config/gcloud/application_default_credentials.json
