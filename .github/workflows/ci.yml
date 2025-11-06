@@ -1,4 +1,4 @@
-name: Sanity test 3
+name: Sanity Test 3
 
 on:
   workflow_dispatch:
@@ -15,19 +15,48 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.10'
+      - uses: iterative/setup-cml@v2
       
-      - name: Install dependencies
+      - name: Install updates
+        run: sudo apt-get update && sudo apt-get install -y build-essential python3-dev
+      - name: Install pip
         run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Upgrade Numpy to compatible version
+        run: |
+          pip uninstall -y numpy
+          pip install numpy==2.0.1
+      - name: Install requirement
+        run:
           pip install -r requirements.txt
-
-      - name: Sanity Report with CML
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run evaluation
+        run: python evaluate.py   
+        
+      - name: Install pytest
+        run: pip install pytest
+      - name: Run tests
+        run: pytest test_test.py --maxfail=1 --disable-warnings -v > result.log || true
+      - name: Create report.md
         run: |
-          pip install cml
           echo "## Test Result" > report.md
-          tail -n 20 result.log >> report.md
+          cat result.log >> report.md
           echo "metrics from training" >> report.md
           cat metrics.csv >> report.md
-          cml comment create --publish report.md
+      - name: Print report.md content
+        run: cat report.md
+      - name: Copy report.md to report.txt
+        run: cp report.md report.txt
+
+
+      #- name: Sanity Report with CML
+       # env:
+        #  REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #run: |
+         # pip install cml
+          #echo "## Test Result" > report.md
+          #cat result.log >> report.md
+          #echo "metrics from training" >> report.md
+          #cat metrics.csv >> report.md
+          #cml comment create --publish report.md
